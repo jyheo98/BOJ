@@ -59,7 +59,7 @@ void update(node *cur) {
 void rotate(node *cur) {
     node *p, *b;
     p = cur->p;
-    if(!p) return ;
+    if(!p) return;
     push(p); push(cur);
     node *pp = p->p;
     if(p->l == cur) {
@@ -78,19 +78,27 @@ void rotate(node *cur) {
         if(pp->l == p) pp->l = cur;
         else pp->r = cur;
     }
-    update(p); update(cur);
+    update(p); 
+    update(cur);
 }
 
-void splay(node *cur) {
-    while(cur->p) {
-        node *p = cur->p;
-        node *pp = p->p;
-        if(pp) {
-            if((pp->l == p) == (p->l == cur)) rotate(p);
-            else rotate(cur);
+void splay(node *x, node *g = nullptr) { // g를 x의 부모로 만듦
+    while(x->p != g) {
+        node *p = x->p;
+        if(p->p == g) {
+            rotate(x);
+            break;
         }
-        rotate(cur);
+        node *pp = p->p;
+        if((pp->l==p)==(p->l==x)) {
+            rotate(p);
+            rotate(x);
+        } else {
+            rotate(x);
+            rotate(x);
+        }
     }
+    if(!g) root = x;
 }
 
 void kth(ll k) {
@@ -103,7 +111,7 @@ void kth(ll k) {
         }
         if(p->l) k -= p->l->sz;
         if(!k) break;
-        else --k;
+        k--;
         p = p->r;
         push(p);
     }
@@ -146,57 +154,53 @@ void flip(int l, int r) {
     p->inv = !p->inv;
 }
 
-void inorder(node *cur) {
-    push(cur);
-    if(cur->l) inorder(cur->l);
-    if(cur->val) cout << cur->val << ' ';
-    if(cur->r) inorder(cur->r);
-}
-
 int main() {
     ios::sync_with_stdio(0), cin.tie(0);
     cin >> n >> q;
     init(n);
     while(q--) {
-        int a,b,c,x;
-        cin >> a;
-        if(a == 1) {
-            cin >> b >> c;
-            gather(b,c);
+        int op;
+        cin >> op;
+        if(op == 1) {
+            int l, r;
+            cin >> l >> r;
+            gather(l,r);
             node *p = root->r->l;
             cout << p->mn << ' ' << p->mx << ' ' << p->sum << '\n';
             p->inv = !p->inv;
         }
-        else if(a == 2) {
-            cin >> b >> c >> x;
-            gather(b,c);
+        else if(op == 2) {
+            int l, r, x; 
+            cin >> l >> r >> x;
+            gather(l,r);
             node *p = root->r->l;
             cout << p->mn << ' ' << p->mx << ' ' << p->sum << '\n';
-            if(b == c) continue;
-            int k = c-b+1;
+            if(l == r) continue;
+            int k = r-l+1;
             if(x > 0) {
                 x %= k;
                 if(x == 0) continue ;
-                flip(c-x+1,c);
-                flip(b,c-x);
-                flip(b,c);
+                flip(r-x+1,r);
+                flip(l,r-x);
+                flip(l,r);
             }
             else if (x < 0) {
                 x = -x;
                 x %= k;
                 if(x == 0) continue ;
-                flip(b,b+x-1);
-                flip(b+x,c);
-                flip(b,c);
+                flip(l,l+x-1);
+                flip(l+x,r);
+                flip(l,r);
             }
         }
-        else if(a == 3) {
-            cin >> b;
-            kth(b); cout << root->val << '\n';
+        else if(op == 3) {
+            int v; cin >> v;
+            kth(v); 
+            cout << root->val << '\n';
         }
         else {
-            cin >> b;
-            splay(ptr[b]); cout << root->l->sz << '\n';
+            int v; cin >> v;
+            splay(ptr[v]); cout << root->l->sz << '\n';
         }
     }
     for(int i=1 ; i<=n ; i++) {
