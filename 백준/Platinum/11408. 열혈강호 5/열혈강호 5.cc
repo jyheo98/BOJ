@@ -23,10 +23,8 @@ const int MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 struct edge {
-	int u, v;
-	int cap;
-	int cost;
-	int flow;
+	int u, v, cap, cost, flow;
+	edge(int u, int v, int cap, int cost, int flow) : u(u), v(v), cap(cap), cost(cost), flow(flow) {}
 };
 
 int N = 800;
@@ -77,8 +75,8 @@ void flow() {
 }
 
 void add_edge(int u, int v, int cap, int cost) {
-	e.push_back({u,v,cap,cost,0});
-	e.push_back({v,u,0,-cost,0});
+	e.emplace_back(u,v,cap,cost,0);
+	e.emplace_back(v,u,0,-cost,0);
 	g[u].push_back(eno++);
 	g[v].push_back(eno++);
 }
