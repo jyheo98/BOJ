@@ -7,26 +7,26 @@
 
 using namespace std;
 
-#define all(x) x.begin(), x.end()
+#define aint(x) x.begin(), x.end()
 #define ff first
 #define ss second
 #define LLINF 0x3f3f3f3f3f3f3f3f
 #define INF 0x3f3f3f3f
-#define uniq(x) sort(all(x)); x.resize(unique(all(x))-x.begin());
+#define uniq(x) sort(aint(x)); x.resize(unique(aint(x))-x.begin());
 #define sz(x) (int)x.size()
 #define pw(x) (1LL<<x)
 
 using pii = pair<int, int>;
 using ll = long long;
 using ld = long double;
-const ll MOD = 1e9 + 7;
+const int MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 struct edge {
 	int u, v;
-	ll cap;
-	ll cost;
-	ll flow;
+	int cap;
+	int cost;
+	int flow;
 };
 
 int N = 800;
@@ -37,12 +37,12 @@ vector<edge> e;
 vector<vector<int>> g(N+5);
 int n, m, eno = 0; 
 
-pair<ll, ll> flow() {
-	ll ret = 0;
-	ll cst = 0;
+void flow() {
+	int ret = 0;
+	int cst = 0;
 	while(1) {
 		vector<int> prev(N+5, -1);
-		vector<ll> dis(N+5, INF);
+		vector<int> dis(N+5, INF);
 		queue<int> q; q.push(S); dis[S] = 0;
 		vector<bool> inQ(N+5); inQ[S] = 1;
 		while(q.size()) {
@@ -60,7 +60,7 @@ pair<ll, ll> flow() {
 			}
 		}
 		if(prev[T] == -1) break;
-		ll flow = LLONG_MAX;
+		int flow = INF;
 		for(int cur = T ; cur != S ; cur = e[prev[cur]].u+e[prev[cur]].v-cur) {
 			int id = prev[cur];
 			flow = min(flow, e[id].cap - e[id].flow);
@@ -73,10 +73,10 @@ pair<ll, ll> flow() {
 		}
 		ret += flow;
 	}
-	return {ret,cst};
+	cout << ret << ' ' << cst << '\n';
 }
 
-void add_edge(int u, int v, ll cap, ll cost) {
+void add_edge(int u, int v, int cap, int cost) {
 	e.push_back({u,v,cap,cost,0});
 	e.push_back({v,u,0,-cost,0});
 	g[u].push_back(eno++);
@@ -96,10 +96,9 @@ int main() {
 		int k; cin >> k;
 		while(k--) {
 			int u; cin >> u; u--;
-			ll val; cin >> val;
+			int val; cin >> val;
 			add_edge(i,n+u,1,val);
 		}
 	}
-	pair<ll, ll> ans = flow();
-	cout << ans.ff << ' ' << ans.ss << '\n';
+	flow();
 }
